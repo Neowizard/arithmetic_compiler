@@ -1,0 +1,228 @@
+import enum
+import abc
+
+
+class NodeType(enum.Enum):
+    Num = 'num'
+    Var = 'var'
+    AddExpr = 'add_expr'
+    SubExpr = 'sub_expr'
+    MulExpr = 'mul_expr'
+    DivExpr = 'div_expr'
+    Assign = 'assignment'
+    LoopAssignment = 'loop_assignment'
+    Program = 'program'
+
+
+class Ast:
+    @property
+    @abc.abstractmethod
+    def type(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def __repr__(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def codegen(self):
+        raise NotImplementedError
+
+
+class Num(Ast):
+    def __init__(self, value):
+        self._value = value
+
+    @property
+    def value(self):
+        return self._value
+
+    @property
+    def type(self):
+        return NodeType.Num
+
+    def codegen(self):
+        if self._value >= (2 ** 64) - 1:
+            raise ValueError(f'Cannot store {self._value} in a 64bit register')
+        code = f'''
+; {self}: Codegen
+mov rax, {self._value}
+'''
+        return code
+
+    def __repr__(self):
+        return f'Num(value={self._value})'
+
+
+class Var(Ast):
+
+    def __init__(self, name):
+        self._name = name
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def type(self):
+        return NodeType.Num
+
+    def codegen(self):
+        code = f'''
+; {self}: Codegen 
+mov rax, {self._name}
+'''
+        return code
+
+    def __repr__(self):
+        return f'Var(name={self._name})'
+
+
+class ArithExpr(Ast):
+    def __init__(self, node_type, left_operand, right_operand):
+        self._type = node_type
+        self._left_operand = left_operand
+        self._right_operand = right_operand
+
+    @property
+    def left_operand(self):
+        return self._left_operand
+
+    @property
+    def right_operand(self):
+        return self._right_operand
+
+    @property
+    def type(self):
+        return self._type
+
+    def _op(self):
+        node_types_to_ops = {NodeType.AddExpr: 'add',
+                             NodeType.SubExpr: 'sub',
+                             NodeType.MulExpr: 'mul',
+                             NodeType.DivExpr: 'div'}
+        return node_types_to_ops[self.type]
+
+    def codegen(self):
+        left_operand_code = self._left_operand.codegen()
+        right_operand_code = self._right_operand.codegen()
+        op = self._op()
+        code = f'''
+; {self}: Codegen for right operand
+{right_operand_code}
+; {self}: Pushing result of right operand evaluation
+push rax
+; {self}: Codegen for left operand
+{left_operand_code}
+; {self}: Applying op
+pop rbx
+{op} rax, rbx
+'''
+        return code
+
+    def __repr__(self):
+        return f'ArithExpr(type={self._type.value}, ' \
+               f'left_operand={self._left_operand}, ' \
+               f'right_operand={self._right_operand})'
+
+
+class Assignment(Ast):
+    def __init__(self, var, expr):
+        self._var = var
+        self._expr = expr
+
+    @property
+    def type(self):
+        return NodeType.Assign
+
+    def codegen(self):
+        expr_code = self._expr.codegen()
+        code = f'''
+; {self}: Codegen
+{expr_code}
+; {self}: Writing expression value to var 
+mov {self._var.name}, rax
+'''
+        return code
+
+    def __repr__(self):
+        return f'Assignment(var={self._var}, expr={self._expr})'
+
+
+class LoopAssignment(Ast):
+    _label_counter = 0
+
+    def __init__(self, counter, assignment):
+        self._label = f'loop_{self._label_counter}'
+        self._label_counter += 1
+
+        self._counter = counter
+        self._assignment = assignment
+
+    @property
+    def type(self):
+        return NodeType.LoopAssign
+
+    def codegen(self):
+        assignment_code = self._assignment.codegen()
+        counter_code = self._counter.codegen()
+        code = f'''
+; {self}: Evaluating counter
+{counter_code}
+; {self}: Storing counter in rcx
+mov rcx, rax
+{self._label}:
+; {self}: Assignment code
+{assignment_code}
+loop {self._label}
+'''
+        return code
+
+    def __repr__(self):
+        return f'LoopAssignment(counter={self._counter}, assignment={self._assignment})'
+
+
+class Program(Ast):
+    def __init__(self, statements):
+        self._statements = statements
+
+    @property
+    def type(self):
+        return NodeType.Program
+
+    def __repr__(self):
+        statements = [f'{statement}' for statement in self._statements]
+        statements = "\n".join(statements)
+        return f'Program({statements})'
+
+    def codegen(self):
+        statements_code = [statement.codegen() for statement in self._statements]
+        printed_statements = [f'{statement}\ncall print_rax' for statement in statements_code]
+        statements = "\n".join(printed_statements)
+        code = f'''
+global main
+main:
+; Resetting r10, r11, r12, r13
+mov r10, 0
+mov r11, 0
+mov r12, 0
+mov r13, 0
+{statements}
+
+mov rax, 60
+mov rdi, 0
+syscall
+
+section .data
+format: db "%d", 10
+
+section .text
+extern printf
+print_rax:
+    mov rdi, format
+    mov rsi, rax
+    mov rax, 0
+    call printf
+    ret
+'''
+        return code
