@@ -7,14 +7,15 @@ The code compiles high-level arithmetic expressions into assembly (Intel syntax)
 which can be further compiled with GCC to produce an X86_64 executable
 
 ## Installation
-This project doesn't have an installation script or anything, but it also simple
-enough to get away with it.
+This project doesn't have an installation script, but it also simple
+enough to get away with it :P, since it has no dependencies and runs 
+completely self-contained
 
-To run it, there are no dependencies. Testing requires only `pytest` which can easily 
-be installed with `pip install pytest` or any package manager of your liking.
+Testing requires only `pytest` which can easily be installed with 
+`pip install pytest` or any package manager of your liking.
 
 ## Running
-You run the compiler by giving it an input file path and an output file path:
+You run the compiler by giving it an input file path. For example:
 
 ```
 $ cat example.in
@@ -26,8 +27,11 @@ r10 = r10*2;
 
 r10 = 15; r11 = 10; r12 = 5;
 r13 = r10-r11 / r12;            # Conforming to arithmetic order of precedence, r13 = 13
+```
 
-./main.py example.in example.s
+We can compile this input file with:
+```
+$ ./main.py example.in example.s
 ```
 
 This command will compile `example.in` and produce the `example.s` file. 
