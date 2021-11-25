@@ -1,4 +1,3 @@
-import box
 import infra.pc as pc
 import compiler.arith_ast as arith_ast
 
@@ -21,7 +20,7 @@ _token_close_curly = _spaced_token('}')
 _token_muldiv = _spaced(pc.make_oneof("*/"))
 _token_addsub = _spaced(pc.make_oneof("+-"))
 _token_num = _spaced(pc.plus(pc.make_char_range('0', '9')))
-_token_num = pc.pack(_token_num, lambda digits: arith_ast.Num(int(''.join(digits))))
+_token_num = pc.pack(_token_num, lambda digits: int(''.join(digits)))
 
 _var_token = pc.pack(_spaced(pc.disj_list([pc.make_word("r10"),
                                            pc.make_word("r11"),
@@ -29,7 +28,18 @@ _var_token = pc.pack(_spaced(pc.disj_list([pc.make_word("r10"),
                                            pc.make_word("r13")])),
                      lambda var_chars: arith_ast.Var(''.join(var_chars)))
 
-nt_operand = pc.disj(_token_num, _var_token)
+
+def make_int(sign_num):
+    sign = sign_num[0]
+    sign = -1 if sign == '-' else 1
+
+    num = sign * sign_num[1]
+    return arith_ast.Num(num)
+
+
+nt_int = pc.pack(pc.caten(pc.disj(pc.make_oneof('+-'), pc.epsilon_parser), _token_num), make_int)
+
+nt_operand = pc.disj(nt_int, _var_token)
 
 
 def make_arith_node(parsed):
@@ -38,8 +48,8 @@ def make_arith_node(parsed):
     if len(tail) == 0:
         return left_operand
 
-    operation = tail[0].operation
-    second_operand = tail[0].operand
+    operation = tail[0][0]
+    second_operand = tail[0][1]
 
     operation_to_node_type = {'+': arith_ast.NodeType.AddExpr,
                               '-': arith_ast.NodeType.SubExpr,
@@ -52,14 +62,12 @@ def make_arith_node(parsed):
 
 
 _nt_muldiv_expr = pc.pack(pc.caten(_token_muldiv, nt_operand),
-                          lambda op_and_rhs: box.Box(operation=op_and_rhs[0],
-                                                     operand=op_and_rhs[1]))
+                          lambda op_and_rhs: (op_and_rhs[0], op_and_rhs[1]))
 _nt_muldiv_expr = pc.caten(nt_operand, pc.star(_nt_muldiv_expr))
 nt_muldiv_expr = pc.pack(_nt_muldiv_expr, make_arith_node)
 
 _nt_addsub_expr = pc.pack(pc.caten(_token_addsub, nt_muldiv_expr),
-                          lambda op_and_rhs: box.Box(operation=op_and_rhs[0],
-                                                     operand=op_and_rhs[1]))
+                          lambda op_and_rhs: (op_and_rhs[0], op_and_rhs[1]))
 _nt_addsub_expr = pc.caten(nt_muldiv_expr, pc.star(_nt_addsub_expr))
 nt_addsub_expr = pc.pack(_nt_addsub_expr, make_arith_node)
 
