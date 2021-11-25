@@ -53,7 +53,7 @@ $ ./example
 
 ## Syntax
 
-You can find the syntax for the arithmetic language in [syntax.bnd](compiler/syntax.bnf) in BNF format. 
+You can find the syntax for the arithmetic language in [syntax.bnf](compiler/syntax.bnf) in BNF format. 
 Note that the syntax does not include whitespaces. A whitespace is either a line-comment 
 (starting with '#') or any char whose ASCII value is <= 32.
 
