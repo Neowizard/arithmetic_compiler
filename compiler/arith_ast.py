@@ -214,15 +214,27 @@ mov rdi, 0
 syscall
 
 section .data
-format: db "%d", 10
+format: db "%lld", 10
 
 section .text
 extern printf
 print_rax:
+    push rax
+    push rcx
+    push r10
+    push r11
+    push r12
+    push r13
     mov rdi, format
     mov rsi, rax
     mov rax, 0
     call printf
+    pop r13
+    pop r12
+    pop r11
+    pop r10
+    pop rcx
+    pop rax
     ret
 '''
         return code
