@@ -8,8 +8,10 @@ def compile_file(_input, output):
 
 
 def compile(code, output):
-    ast = parser.nt_statements(code).match
-    output_code = ast.codegen()
+    ast = parser.nt_statements(code)
+    if ast.next_token_index < len(code):
+        raise Exception(f'Failed to parse code at {ast.next_token_index}')
+    output_code = ast.match.codegen()
 
     with open(output, 'wt') as output_file:
         output_file.write(output_code)

@@ -3,8 +3,10 @@ import compiler.arith_ast as arith_ast
 
 
 def _spaced(parser):
-    nt_spaces = pc.star(pc.make_const(lambda c: ord(c) <= 32))
-    nt_spaced = pc.caten_list([nt_spaces, parser, nt_spaces])
+    nt_space = pc.make_const(lambda c: ord(c) <= 32)
+    nt_comment = pc.caten(pc.make_char('#'), pc.star(pc.make_const(lambda c: c != '\n')))
+    nt_whitespaces = pc.star(pc.disj(nt_comment, nt_space))
+    nt_spaced = pc.caten_list([nt_whitespaces, parser, nt_whitespaces])
     return pc.pack(nt_spaced, lambda l: l[1])
 
 
