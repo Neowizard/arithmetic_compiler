@@ -96,11 +96,23 @@ class ArithExpr(Ast):
     def type(self):
         return self._type
 
+    def _addsub_op(self, op):
+        code = f'''
+{op} rax, rbx  
+'''
+        return code
+
+    def _muldiv_op(self, op):
+        code = f'''
+{op} rbx  
+'''
+        return code
+
     def _op(self):
-        node_types_to_ops = {NodeType.AddExpr: 'add',
-                             NodeType.SubExpr: 'sub',
-                             NodeType.MulExpr: 'mul',
-                             NodeType.DivExpr: 'div'}
+        node_types_to_ops = {NodeType.AddExpr: self._addsub_op('add'),
+                             NodeType.SubExpr: self._addsub_op('sub'),
+                             NodeType.MulExpr: self._muldiv_op('mul'),
+                             NodeType.DivExpr: self._muldiv_op('div')}
         return node_types_to_ops[self.type]
 
     def codegen(self):
@@ -116,7 +128,7 @@ push rax
 {left_operand_code}
 ; {self}: Applying op
 pop rbx
-{op} rax, rbx
+{op}
 '''
         return code
 
