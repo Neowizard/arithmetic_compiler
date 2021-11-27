@@ -1,0 +1,14 @@
+digraph G {
+    labelloc = "t"
+    label = "Compiler Pipeline"
+    rankdir = "LR"
+    node [shape = rectangle];
+    edge []
+    Input [style = invis]
+    Output [style = invis]
+    Input -> Scanner [label = "Source code text"]
+    Scanner -> Parser [label = "Token list"]
+    Parser -> "Semantic Analyzer" [label = "AST"]
+    "Semantic Analyzer" -> "Code Generator" [label = "IR"]
+    "Code Generator" -> Output [label = "Output text"]
+}
