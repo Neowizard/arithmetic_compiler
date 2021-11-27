@@ -54,6 +54,10 @@ for (int i = 0; i < rows; i++) {
 }
 ```
 
+We wouldn't want to perform this optimization in our source, since it would cause both `partial_foo` and its resulting
+partial function `row_foo` to be extremely coupled, ad both functions would be horrible to maintain since they 
+inherently contain only have the task. 
+
 Note, this technique of implementing a function partially and returning the rest of calculation is called "currying" 
 after Haskell Curry who invented it. It's implemented natively in some languages like Ocaml, Reason and F#.
 
