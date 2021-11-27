@@ -14,7 +14,7 @@ class NodeType(enum.Enum):
     Program = 'program'
 
 
-class Ast:
+class AstNode:
     @property
     @abc.abstractmethod
     def type(self):
@@ -29,7 +29,7 @@ class Ast:
         raise NotImplementedError
 
 
-class Num(Ast):
+class Num(AstNode):
     def __init__(self, value):
         self._value = value
 
@@ -54,7 +54,7 @@ mov rax, {self._value}
         return f'Num(value={self._value})'
 
 
-class Var(Ast):
+class Var(AstNode):
 
     def __init__(self, name):
         self._name = name
@@ -78,7 +78,7 @@ mov rax, {self._name}
         return f'Var(name={self._name})'
 
 
-class ArithExpr(Ast):
+class ArithExpr(AstNode):
     def __init__(self, node_type, left_operand, right_operand):
         self._type = node_type
         self._left_operand = left_operand
@@ -138,7 +138,7 @@ pop rbx
                f'right_operand={self._right_operand})'
 
 
-class Assignment(Ast):
+class Assignment(AstNode):
     def __init__(self, var, expr):
         self._var = var
         self._expr = expr
@@ -161,22 +161,26 @@ mov {self._var.name}, rax
         return f'Assignment(var={self._var}, expr={self._expr})'
 
 
-class LoopAssignment(Ast):
+class LoopAssignment(AstNode):
     _label_counter = 0
 
-    def __init__(self, counter, assignment):
+    def __init__(self, counter, assignments):
         self._label = f'loop_{self._label_counter}'
         self._label_counter += 1
 
         self._counter = counter
-        self._assignment = assignment
+        self._assignments = assignments
 
     @property
     def type(self):
-        return NodeType.LoopAssign
+        return NodeType.LoopAssignment
+
+
+    def _assignments_code(self):
+        return [assignment.codegen() for assignment in self._assignments]
 
     def codegen(self):
-        assignment_code = self._assignment.codegen()
+        assignments_code = "\n".join(self._assignments_code())
         counter_code = self._counter.codegen()
         code = f'''
 ; {self}: Evaluating counter
@@ -184,17 +188,17 @@ class LoopAssignment(Ast):
 ; {self}: Storing counter in rcx
 mov rcx, rax
 {self._label}:
-; {self}: Assignment code
-{assignment_code}
+; {self}: Assignments code
+{assignments_code}
 loop {self._label}
 '''
         return code
 
     def __repr__(self):
-        return f'LoopAssignment(counter={self._counter}, assignment={self._assignment})'
+        return f'LoopAssignment(counter={self._counter}, assignment={self._assignments})'
 
 
-class Program(Ast):
+class Program(AstNode):
     def __init__(self, statements):
         self._statements = statements
 

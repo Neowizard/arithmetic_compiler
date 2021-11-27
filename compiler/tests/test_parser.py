@@ -1,5 +1,5 @@
 import compiler.parser as parser
-import compiler.arith_ast as arith_ast
+import compiler.ast as arith_ast
 
 
 def test_operand():
@@ -52,3 +52,11 @@ def test_addsub_expr():
     left_operand = actual.left_operand
     assert left_operand.type == arith_ast.NodeType.AddExpr
     assert left_operand.right_operand.value == 5
+
+
+def test_loop():
+    subject = parser.nt_loop_assignment
+    input = '''loop r10 r10 = 1 r10=0;'''
+
+    actual = subject(input).match
+    assert actual.type == arith_ast.NodeType.LoopAssignment

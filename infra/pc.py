@@ -301,7 +301,7 @@ def trace_parser(parser, name):
             print(f'{name}: match from {index}:\n'
                   f'------\n'
                   f'{parser_output}'
-                  f'======')
+                  f'\n======')
             return parser_output
         except NoMatchException:
             print(f'{name}: Failed to match from {index} against tokens: {tokens}')

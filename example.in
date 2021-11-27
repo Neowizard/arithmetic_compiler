@@ -1,8 +1,13 @@
 r11 = 32;
 r10 = 0 - r11 / r11;            # r10 = -1
-loop r11 {                      # loop r11 (32) times
-r10 = r10*2;
-}                               # r10 = -4294967296 (-(2**32))
+r12 = 0;
+loop r11                        # loop r11 (32) times
+    r11 = 32                     # loop is immutable. Unaffected by writes to counter
+    r10 = r10 * 2;
+                                # r10 = -4294967296 (-(2**32))
+
+r11 = r11;                      # print r11 (32). Counter is unmodified by loop
+
 
 r10 = 15; r11 = 10; r12 = 5;
 r13 = r10-r11 / r12;            # Conforming to arithmetic order of precedence, r13 = 13

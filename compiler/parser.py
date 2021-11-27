@@ -1,5 +1,5 @@
 import infra.pc as pc
-import compiler.arith_ast as arith_ast
+import compiler.ast as arith_ast
 
 
 def _spaced(parser):
@@ -17,8 +17,6 @@ def _spaced_token(word):
 _token_assignment = _spaced_token('=')
 _token_eos = _spaced_token(';')
 _token_loop = _spaced_token('loop')
-_token_open_curly = _spaced_token('{')
-_token_close_curly = _spaced_token('}')
 _token_muldiv = _spaced(pc.make_oneof("*/"))
 _token_addsub = _spaced(pc.make_oneof("+-"))
 _token_num = _spaced(pc.plus(pc.make_char_range('0', '9')))
@@ -82,25 +80,24 @@ def make_assignment_node(elements):
     return arith_ast.Assignment(var, expr)
 
 
-_nt_assignment = pc.caten_list([_var_token, _token_assignment, nt_arith_expr, _token_eos])
+_nt_assignment = pc.caten_list([_var_token, _token_assignment, nt_arith_expr])
 nt_assignment = pc.pack(_nt_assignment, make_assignment_node)
 
 
 def make_loop_assignment_node(elements):
     counter = elements[1]
-    assignment = elements[3]
+    assignment = elements[2]
     return arith_ast.LoopAssignment(counter, assignment)
 
 
-_nt_loop_assignment = pc.caten_list([_token_loop, nt_operand,
-                                     _token_open_curly,
-                                     nt_assignment,
-                                     _token_close_curly])
+_nt_loop_assignment = pc.caten_list([_token_loop, nt_operand, pc.star(nt_assignment)])
 nt_loop_assignment = pc.pack(_nt_loop_assignment, make_loop_assignment_node)
-
 
 def make_program(statements):
     return arith_ast.Program(statements)
 
 
-nt_statements = pc.pack(pc.star(pc.disj(nt_assignment, nt_loop_assignment)), make_program)
+_nt_statement = pc.pack(pc.caten(pc.disj(nt_assignment, nt_loop_assignment), _token_eos),
+                        lambda assignment_with_eos: assignment_with_eos[0])
+nt_statements = pc.pack(pc.star(_nt_statement), make_program)
+
