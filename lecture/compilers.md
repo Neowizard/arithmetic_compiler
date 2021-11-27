@@ -10,9 +10,15 @@ A compiler is a program that translates source code in one language, into source
 `javac` compiles Java source code into ByteCode, `gcc` compiles C into assembly (among others) and `binson` compiles CFG 
 specifications (written as Bison Grammar) to C.
 
+It's important to distinguish between a compiler that translates ode from one language to another, and an interpreter 
+that evaluates code (where the CPU is the "final interpreter" in every tool-chain).
+
 # Why Compile?
 If compilers just translate code from one language to another, why do we need them? We can implement interpreters to 
-actually execute the code for any language on any architecture. What's the compiler's role? **Optimizations**.
+actually evaluate the code for any language on any architecture. What's the compiler's role? **Optimizations**. A 
+compiler is first and foremost a platform on top of which we implement optimizations. In the last few decades compilers
+developers have also begun to emphasise code analyses to give the user more insight and warn against potentially 
+troublesome code. 
 
 A compiler exists so that developers can write good code from a software engineering standpoint, while ignoring any 
 questions of how the code performs. The compiler is tasked with taking that well engineered, but poorly performing, code
@@ -52,7 +58,22 @@ Note, this technique of implementing a function partially and returning the rest
 after Haskell Curry who invented it. It's implemented natively in some languages like Ocaml, Reason and F#.
 
  
-## Compiler pipeline
+## What can we optimize?
+We all intuitively thing about runtime and memory when we think about optimizations, and for the most part, that's 
+accurate. Most compilers are focused with optimizing CPU performance, and (to a lesser degree) memory utilization.
+
+However, any finite resource can be optimized. There are compilers that can reduce the size of the executable, the 
+startup time, the number of registers used during execution, IO, CPU idle time, context switches and just about any
+resource we can consider.
+
+However, there are also compilers that control the code's layout (formatters are a subclass of these compilers), 
+the line-length and various other visual aspects. These compilers try to optimize the coder's attention. Reducing 
+interruptions and confusion.
+
+There are compilers that are tasked with optimizing the runtime of CNC machines since those are usually slow 
+(relatively) and their time is very expensive.    
+ 
+# Compiler pipeline
 
 This is the traditional pipeline for a compiler:
 ![Pipeline](pipeline.svg)
