@@ -7,7 +7,7 @@ What's a compiler? I'll start with what a compiler is not (necessarily).
 1. A compiler does not calculate the value of an expression/the input code (except in very few, small and special cases)
 
 A compiler is a program that translates source code in one language, into source code in another language. For instance
-`javac` compiles Java source code into ByteCode, `gcc` compiles C into assembly (among others) and `binson` compiles CFG 
+`javac` compiles Java source code into ByteCode, `gcc` compiles C into assembly (among others) and `bison` compiles CFG 
 specifications (written as Bison Grammar) to C.
 
 It's important to distinguish between a compiler that translates ode from one language to another, and an interpreter 
