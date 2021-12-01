@@ -44,11 +44,12 @@ class Num(AstNode):
     def codegen(self):
         if self._value >= (2 ** 64) - 1:
             raise ValueError(f'Cannot store {self._value} in a 64bit register')
-        code = f'''
-; {self}: Codegen
-mov rax, {self._value}
-'''
+        code = f'''; {self}: Codegen
+mov rax, {self._value}'''
         return code
+
+    def __str__(self):
+        return f'{self._value}'
 
     def __repr__(self):
         return f'Num(value={self._value})'
@@ -68,11 +69,12 @@ class Var(AstNode):
         return NodeType.Num
 
     def codegen(self):
-        code = f'''
-; {self}: Codegen 
-mov rax, {self._name}
-'''
+        code = f'''; {self}: Codegen 
+mov rax, {self._name}'''
         return code
+
+    def __str__(self):
+        return self._name
 
     def __repr__(self):
         return f'Var(name={self._name})'
@@ -97,15 +99,11 @@ class ArithExpr(AstNode):
         return self._type
 
     def _addsub_op(self, op):
-        code = f'''
-{op} rax, rbx  
-'''
+        code = f'''{op} rax, rbx'''
         return code
 
     def _muldiv_op(self, op):
-        code = f'''
-{op} rbx  
-'''
+        code = f'''{op} rbx'''
         return code
 
     def _op(self):
@@ -119,8 +117,7 @@ class ArithExpr(AstNode):
         left_operand_code = self._left_operand.codegen()
         right_operand_code = self._right_operand.codegen()
         op = self._op()
-        code = f'''
-; {self}: Codegen for right operand
+        code = f'''; {self}: Codegen for right operand
 {right_operand_code}
 ; {self}: Pushing result of right operand evaluation
 push rax
@@ -128,9 +125,15 @@ push rax
 {left_operand_code}
 ; {self}: Applying op
 pop rbx
-{op}
-'''
+{op}'''
         return code
+
+    def __str__(self):
+        op_str = {NodeType.AddExpr: '+',
+                  NodeType.SubExpr: '-',
+                  NodeType.MulExpr: '*',
+                  NodeType.DivExpr: '/'}[self.type]
+        return f'{self._left_operand} {op_str} {self._right_operand}'
 
     def __repr__(self):
         return f'ArithExpr(type={self._type.value}, ' \
@@ -149,13 +152,14 @@ class Assignment(AstNode):
 
     def codegen(self):
         expr_code = self._expr.codegen()
-        code = f'''
-; {self}: Codegen
+        code = f'''; {self}: Codegen
 {expr_code}
 ; {self}: Writing expression value to var 
-mov {self._var.name}, rax
-'''
+mov {self._var.name}, rax'''
         return code
+
+    def __str__(self):
+        return f'{self._var} <- {self._expr}'
 
     def __repr__(self):
         return f'Assignment(var={self._var}, expr={self._expr})'
@@ -175,7 +179,6 @@ class LoopAssignment(AstNode):
     def type(self):
         return NodeType.LoopAssignment
 
-
     def _assignments_code(self):
         return [assignment.codegen() for assignment in self._assignments]
 
@@ -190,12 +193,14 @@ mov rcx, rax
 {self._label}:
 ; {self}: Assignments code
 {assignments_code}
-loop {self._label}
-'''
+loop {self._label}'''
         return code
 
+    def __str__(self):
+        return f"loop {self._counter}"
+
     def __repr__(self):
-        return f'LoopAssignment(counter={self._counter}, assignment={self._assignments})'
+        return f'str LoopAssignment(counter={self._counter}, assignment={self._assignments})'
 
 
 class Program(AstNode):
@@ -213,8 +218,8 @@ class Program(AstNode):
 
     def codegen(self):
         statements_code = [statement.codegen() for statement in self._statements]
-        printed_statements = [f'{statement}\ncall print_rax' for statement in statements_code]
-        statements = "\n".join(printed_statements)
+        printed_statements = [f'{statement}\ncall print_rax\n' for statement in statements_code]
+        statements = "".join(printed_statements)
         code = f'''
 global main
 main:
@@ -251,6 +256,5 @@ print_rax:
     pop r10
     pop rcx
     pop rax
-    ret
-'''
+    ret'''
         return code
