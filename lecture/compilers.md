@@ -22,7 +22,7 @@ troublesome code.
 
 A compiler exists so that developers can write good code from a software engineering standpoint, while ignoring any 
 questions of how the code performs. The compiler is tasked with taking that well engineered, but poorly performing, code
-and transforming it to its most optimized form.
+and transforming it to its most optimized form in the target language.
 
 For instance, if we write the following code:
 ```c
@@ -55,8 +55,8 @@ for (int i = 0; i < rows; i++) {
 ```
 
 We wouldn't want to perform this optimization in our source, since it would cause both `partial_foo` and its resulting
-partial function `row_foo` to be extremely coupled, ad both functions would be horrible to maintain since they 
-inherently contain only have the task. 
+partial function `row_foo` to be extremely coupled, and both functions would be horrible to maintain since they 
+inherently contain only half the task. 
 
 Note, this technique of implementing a function partially and returning the rest of calculation is called "currying" 
 after Haskell Curry who invented it. It's implemented natively in some languages like Ocaml, Reason and F#.
