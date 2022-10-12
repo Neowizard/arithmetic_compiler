@@ -4,7 +4,7 @@ of parsing and code-generation (with hopes to grow it into a full compiler
 pipeline in the future, by adding a semantic analyzer and IR stage)
 
 The code compiles high-level arithmetic expressions into assembly (Intel syntax)
-which can be further compiled with GCC to produce an X86_64 executable
+which can be further compiled with NASM & GCC to produce an X86_64 executable
 
 ## Installation
 This project doesn't have an installation script, but it also simple
