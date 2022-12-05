@@ -82,7 +82,7 @@ after Haskell Curry who invented it. It's implemented natively in some languages
 
  
 ## What can we optimize?
-We all intuitively thing about runtime and memory when we think about optimizations, and for the most part, that's 
+We all intuitively think about runtime and memory when we think about optimizations, and for the most part, that's 
 accurate. Most compilers are focused with optimizing CPU performance, and (to a lesser degree) memory utilization.
 
 However, any finite resource can be optimized. There are compilers that can reduce the size of the executable, the 
