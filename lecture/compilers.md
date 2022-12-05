@@ -102,7 +102,8 @@ This is the traditional pipeline for a compiler:
 ![Pipeline](pipeline.svg)
 
 The traditional compiler pipeline is not the only design for a compiler, and in fact most compilers are not implemented
-exactly this way. Some stages are often added while some can be omitted.
+exactly this way. Some stages are often added while some can be omitted. However, this is the common base structure 
+around which most compilers are built
 
 ### Scanner
 The scanner is responsible for taking the source input, and chunking it up into atomic chunks of information, tokens.
