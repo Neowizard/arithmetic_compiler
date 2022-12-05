@@ -10,7 +10,7 @@ A compiler is a program that translates source code in one language, into source
 `javac` compiles Java source code into ByteCode, `gcc` compiles C into assembly (among others) and `bison` compiles CFG 
 specifications (written as Bison Grammar) to C.
 
-It's important to distinguish between a compiler that translates ode from one language to another, and an interpreter 
+It's important to distinguish between a compiler that translates code from one language to another, and an interpreter 
 that evaluates code (where the CPU is the "final interpreter" in every tool-chain).
 
 # Why Compile?
