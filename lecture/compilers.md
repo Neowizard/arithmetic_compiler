@@ -55,9 +55,27 @@ for (int i = 0; i < rows; i++) {
 ```
 Consider, for example, that foo could be taking the root of `i` and multiplying it by `j`. Or that we read a file pointed at by `i`, and searching within its contents the string `j`. Avoiding the cost of what `foo` does with `i` again and again, `cols` times, can be a significant optimization.
 
-We wouldn't want to perform this optimization in our source, since it would cause both `partial_foo` and its resulting
+We wouldn't want to perform this optimization in our source however, since it would cause both `partial_foo` and the resulting
 partial function `row_foo` to be extremely coupled, and both functions would be horrible to maintain since they 
-inherently contain only half the task. 
+inherently contain only half the task. We could use nested functions to implement this, but even then, reading the resulting function would be unpleasent:
+
+```python
+def foo(index):
+    contents = ''
+    def search_function(search_int):
+        return re.search(search_int, contents)
+    with open(f'/path/to/file/{index}', 'rt') as _file:
+        contents = _file.read()
+    return search_function
+```
+
+Compared to the slower but clearer:
+```python
+def foo(index, search_int):
+    with open(f'/path/to/file/{index}', 'rt') as _file:
+        contents = _file.read()
+    return re.search(search_int, contents)
+```
 
 Note, this technique of implementing a function partially and returning the rest of calculation is called "currying" 
 after Haskell Curry who invented it. It's implemented natively in some languages like Ocaml, Reason and F#.
