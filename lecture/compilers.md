@@ -89,7 +89,7 @@ However, any finite resource can be optimized. There are compilers that can redu
 startup time, the number of registers used during execution, IO, CPU idle time, context switches and just about any
 resource we can consider.
 
-However, there are also compilers that control the code's layout (formatters are a subclass of these compilers), 
+However, there are also [compilers that control the code's layout](https://github.com/Neowizard/UGLY) (formatters are a subclass of these compilers), 
 the line-length and various other visual aspects. These compilers try to optimize the coder's attention. Reducing 
 interruptions and confusion.
 
