@@ -53,6 +53,7 @@ for (int i = 0; i < rows; i++) {
     }
 }
 ```
+Consider that foo could be taking the root of `i` and multiplying it by `j`. Saving us the cost of recalculating the root of `i` again and again, `cols` times is a significant reduction of wasted CPU time.
 
 We wouldn't want to perform this optimization in our source, since it would cause both `partial_foo` and its resulting
 partial function `row_foo` to be extremely coupled, and both functions would be horrible to maintain since they 
