@@ -111,7 +111,8 @@ The scanner is responsible for taking the source input, and chunking it up into 
 A token can be the "if" keyword, the number 6.283, a curly bracket etc. The 'i' character in "int" is not a token since
 it has no meaning in its own right. It's only a part of the "int" token.
 
-Whitespaces and comments are not tokens and are either ignored or used to separate tokens.
+Whitespaces and comments are not tokens and are used as token-delimiters in most cases, but there are cases like Python 
+where whitespaces a messy deal since indentation is a token in python, while other spaces are just delimiters.
 
 The scanner is defined using a set of regular expressions, where each expression usually corresponds to a type of token.
 
