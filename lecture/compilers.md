@@ -149,7 +149,7 @@ We implemented our parser using the Parsers Combinator technique. This technique
 specifications directly in the compiler's language, and so every syntactic element becomes a first-class object in
 our code. This makes the parser, small, robust and very easy to upgrade.
  
-This so opens the door for a language designer to implement "quality of life" choices into the language, like not 
+This also opens the door for a language designer to implement "quality of life" choices into the language, like not 
 requiring the user to use curly brackets in loops, or any start-end syntax for loops, while also not being 
 whitespace-sensitive.
 
