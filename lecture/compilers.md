@@ -166,19 +166,23 @@ implement analyses, like Dataflow Frameworks. These take the IR as well as the a
 
 An IR can be many things. From the input AST all the way up to complete assembly languages. In most cases, the IR will
 be a simplified assembly-like language, with most real-world limitations removed (e.g. limited number of registers,
-operations side-effects).
+operations side-effects). 
+
+A common IR is the Three-Address-Code (TAC) representation which is a simply instruction set where every command has 
+at most two, one operator and one target, like `taget = operand1 + operand2`, in addition to things like flow controls
+(like `jmp`/`goto`/`call`) and an infinite number of registers.
 
 Note, the compiler exampled in this repo does not implement a Semantic Analyzer. The IR used by the code generator
 is the AST itself.
 
 ### Code Generator
 The Code Generator takes IR and generates text in the target language that has the same meaning in the target language
-as the input code had in the source language.
+as the input code had in the source language. In other words, it outputs code that **behavs** the same as the input code.
 
-The code generator responsible for constricting the runtime framework, the internal representation of the source 
-language's data types (e.g. representing Python objects in assembly), implementing how functions are invoked,
-how variables are stored and accessed, implementing many of the optimizations and, of course, generating the code for 
-the IR in the target language.
+The code generator responsible for constricting the runtime framework (garbage collection, memory management etc.), 
+the internal representation of the source language's data types (e.g. representing Python objects in assembly), 
+implementing how functions are invoked, how variables are stored and accessed (register allocation), implementing 
+many of the optimizations and, of course, translating every IR instruction in to code in the target language.
 
 The Code Generator is the back-end of the compiler
 
@@ -186,9 +190,10 @@ The Code Generator is the back-end of the compiler
 The Code Generator our exampled compiler is very straight forward. It compiles our IR (AST) down the x86_64 assembly.
 
 All the data in our source language (integers) is native to our target language, so their representation is trivial. 
-Since we don't support functions and only a fixed set of variables (r10, r11, r12 and r13), those are also trivial.
+Since we don't support functions and only a fixed set of variables (r10, r11, r12 and r13), register allocation is also 
+trivial.
 
-In fact, almost every command in our source language has a very simple implementation in our target language, so in fact 
-our Code Generator is a straight forward translator for every statement except for the `loop` statement. 
+In fact, almost every command in our source language has a very simple implementation in our target language, 
+except for, maybe, the `loop` statement. 
 
  
