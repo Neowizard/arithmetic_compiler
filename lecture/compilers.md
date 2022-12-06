@@ -116,7 +116,7 @@ where whitespaces a messy deal since indentation is a token in python, while oth
 
 The scanner is defined using a set of regular expressions, where each expression usually corresponds to a type of token.
 
-Note, the compiler exampled in this repo does not implement a scanner. The parser takes, as its token list, a string
+**Note**: the compiler exampled in this repo does not implement a scanner. The parser takes, as its token list, a string
 where each char in the string is a token.
 
 ### Parser
