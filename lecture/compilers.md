@@ -131,7 +131,7 @@ class FunctionNode(AstNode):
     ReturnType: TypeNode
     Body: list[StatementNode]
 ```
-Which shows the hierarchy between a function and its body. 
+Which shows the hierarchy between a function and its body and parameters. 
 
 The parser is also in charge of implementing syntactic sugars. A syntactic sugar is a bit of syntax that has no AST node
 designed to describe it, and it's instead parsed into one or more nodes of other syntactic elements. The most ubiquitous
